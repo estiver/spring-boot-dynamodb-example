@@ -31,159 +31,189 @@ import static org.springframework.http.HttpStatus.OK;
 @RunWith(MockitoJUnitRunner.class)
 public class CustomerControllerTest {
 
-  @Mock
-  private CustomerService service;
+	@Mock
+	private CustomerService service;
 
-  @InjectMocks
-  private CustomerController controller;
+	@InjectMocks
+	private CustomerController controller;
 
-  @Test
-  public void listShouldRespondWithNoContentWhenNothingInDatabase() throws Exception {
+	@Test
+	public void listShouldRespondWithNoContentWhenNothingInDatabase() throws Exception {
 
-    when(service.list()).thenReturn(emptyList());
-    ResponseEntity<List<Customer>> result = controller.list();
-    assertThat(result, is(responseEntityWithStatus(NO_CONTENT)));
-  }
+		when(service.list()).thenReturn(emptyList());
+		ResponseEntity<List<Customer>> result = controller.list();
+		assertThat(result, is(responseEntityWithStatus(NO_CONTENT)));
+	}
 
-  @Test
-  public void listShouldRespondWithOkAndResultsFromService() throws Exception {
+	@Test
+	public void listShouldRespondWithOkAndResultsFromService() throws Exception {
 
-    Customer customer1 = new Customer().withName("Conan Doyle");
-    Customer customer2 = new Customer().withName("Olaf Stapledon");
-    when(service.list()).thenReturn(asList(customer1, customer2));
-    ResponseEntity<List<Customer>> result = controller.list();
-    assertThat(result, is(allOf(
-        responseEntityWithStatus(OK),
-        responseEntityThat(containsInAnyOrder(customer1, customer2)))));
-  }
+		Customer customer1 = new Customer().withName("Conan Doyle");
+		Customer customer2 = new Customer().withName("Olaf Stapledon");
+		when(service.list()).thenReturn(asList(customer1, customer2));
+		ResponseEntity<List<Customer>> result = controller.list();
+		assertThat(result,
+				is(allOf(responseEntityWithStatus2(OK), responseEntityThat(containsInAnyOrder(customer1, customer2)))));
+	}
 
-  @Test
-  public void readShouldReplyWithNotFoundIfNoSuchCustomer() throws Exception {
+	@Test
+	public void readShouldReplyWithNotFoundIfNoSuchCustomer() throws Exception {
 
-    when(service.read("Olaf Stapledon")).thenReturn(Optional.empty());
-    ResponseEntity<Customer> result = controller.read("Olaf Stapledon");
-    assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
-  }
+		when(service.read("Olaf Stapledon")).thenReturn(Optional.empty());
+		ResponseEntity<Customer> result = controller.read("Olaf Stapledon");
+		assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
+	}
 
-  @Test
-  public void readShouldReplyWithCustomerIfCustomerExists() throws Exception {
+	@Test
+	public void readShouldReplyWithCustomerIfCustomerExists() throws Exception {
 
-    Customer customer = new Customer().withName("Olaf Stapledon");
-    when(service.read("Olaf Stapledon")).thenReturn(Optional.of(customer));
-    ResponseEntity<Customer> result = controller.read("Olaf Stapledon");
-    assertThat(result, is(allOf(
-        responseEntityWithStatus(OK),
-        responseEntityThat(equalTo(customer)))));
-  }
+		Customer customer = new Customer().withName("Olaf Stapledon");
+		when(service.read("Olaf Stapledon")).thenReturn(Optional.of(customer));
+		ResponseEntity<Customer> result = controller.read("Olaf Stapledon");
+		assertThat(result, is(allOf(responseEntityWithStatus3(OK), responseEntityThat(equalTo(customer)))));
+	}
 
-  @Test
-  public void createShouldReplyWithConflictIfCustomerAlreadyExists() throws Exception {
+	@Test
+	public void createShouldReplyWithConflictIfCustomerAlreadyExists() throws Exception {
 
-    Customer customer = new Customer().withName("Olaf Stapledon");
-    when(service.create(customer)).thenReturn(Optional.empty());
-    ResponseEntity<Customer> result = controller.create(customer);
-    assertThat(result, is(responseEntityWithStatus(CONFLICT)));
-  }
+		Customer customer = new Customer().withName("Olaf Stapledon");
+		when(service.create(customer)).thenReturn(Optional.empty());
+		ResponseEntity<Customer> result = controller.create(customer);
+		assertThat(result, is(responseEntityWithStatus(CONFLICT)));
+	}
 
-  @Test
-  public void createShouldReplyWithCreatedAndCustomerData() throws Exception {
+	@Test
+	public void createShouldReplyWithCreatedAndCustomerData() throws Exception {
 
-    Customer customer = new Customer().withName("Olaf Stapledon");
-    when(service.create(customer)).thenReturn(Optional.of(customer));
-    ResponseEntity<Customer> result = controller.create(customer);
-    assertThat(result, is(allOf(
-        responseEntityWithStatus(CREATED),
-        responseEntityThat(equalTo(customer)))));
-  }
+		Customer customer = new Customer().withName("Olaf Stapledon");
+		when(service.create(customer)).thenReturn(Optional.of(customer));
+		ResponseEntity<Customer> result = controller.create(customer);
+		assertThat(result, is(allOf(responseEntityWithStatus3(CREATED), responseEntityThat(equalTo(customer)))));
+	}
 
-  @Test
-  public void putShouldReplyWithNotFoundIfCustomerDoesNotExist() throws Exception {
+	@Test
+	public void putShouldReplyWithNotFoundIfCustomerDoesNotExist() throws Exception {
 
-    Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
-    when(service.replace(newCustomerData)).thenReturn(Optional.empty());
-    ResponseEntity<Customer> result = controller.put("Olaf Stapledon", new Customer().withAddress("England"));
-    assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
-  }
+		Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
+		when(service.replace(newCustomerData)).thenReturn(Optional.empty());
+		ResponseEntity<Customer> result = controller.put("Olaf Stapledon", new Customer().withAddress("England"));
+		assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
+	}
 
-  @Test
-  public void putShouldReplyWithUpdatedCustomerAndOkIfCustomerExists() throws Exception {
+	@Test
+	public void putShouldReplyWithUpdatedCustomerAndOkIfCustomerExists() throws Exception {
 
-    Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
-    when(service.replace(newCustomerData)).thenReturn(Optional.of(newCustomerData));
-    ResponseEntity<Customer> result = controller.put("Olaf Stapledon", new Customer().withAddress("England"));
-    assertThat(result, is(allOf(
-        responseEntityWithStatus(OK),
-        responseEntityThat(equalTo(newCustomerData)))));
-  }
+		Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
+		when(service.replace(newCustomerData)).thenReturn(Optional.of(newCustomerData));
+		ResponseEntity<Customer> result = controller.put("Olaf Stapledon", new Customer().withAddress("England"));
+		assertThat(result, is(allOf(responseEntityWithStatus3(OK), responseEntityThat(equalTo(newCustomerData)))));
+	}
 
-  @Test
-  public void patchShouldReplyWithNotFoundIfCustomerDoesNotExist() throws Exception {
+	@Test
+	public void patchShouldReplyWithNotFoundIfCustomerDoesNotExist() throws Exception {
 
-    Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
-    when(service.update(newCustomerData)).thenReturn(Optional.empty());
-    ResponseEntity<Customer> result = controller.patch("Olaf Stapledon", new Customer().withAddress("England"));
-    assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
-  }
+		Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
+		when(service.update(newCustomerData)).thenReturn(Optional.empty());
+		ResponseEntity<Customer> result = controller.patch("Olaf Stapledon", new Customer().withAddress("England"));
+		assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
+	}
 
-  @Test
-  public void patchShouldReplyWithUpdatedCustomerAndOkIfCustomerExists() throws Exception {
+	@Test
+	public void patchShouldReplyWithUpdatedCustomerAndOkIfCustomerExists() throws Exception {
 
-    Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
-    when(service.update(newCustomerData)).thenReturn(Optional.of(newCustomerData));
-    ResponseEntity<Customer> result = controller.patch("Olaf Stapledon", new Customer().withAddress("England"));
-    assertThat(result, is(allOf(
-        responseEntityWithStatus(OK),
-        responseEntityThat(equalTo(newCustomerData)))));
-  }
+		Customer newCustomerData = new Customer().withName("Olaf Stapledon").withAddress("England");
+		when(service.update(newCustomerData)).thenReturn(Optional.of(newCustomerData));
+		ResponseEntity<Customer> result = controller.patch("Olaf Stapledon", new Customer().withAddress("England"));
+		assertThat(result, is(allOf(responseEntityWithStatus3(OK), responseEntityThat(equalTo(newCustomerData)))));
+	}
 
-  @Test
-  public void deleteShouldRespondWithNotFoundIfCustomerDoesNotExist() throws Exception {
+	@Test
+	public void deleteShouldRespondWithNotFoundIfCustomerDoesNotExist() throws Exception {
 
-    when(service.delete("Olaf Stapledon")).thenReturn(false);
-    ResponseEntity<Void> result = controller.delete("Olaf Stapledon");
-    assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
-  }
+		when(service.delete("Olaf Stapledon")).thenReturn(false);
+		ResponseEntity<Void> result = controller.delete("Olaf Stapledon");
+		assertThat(result, is(responseEntityWithStatus(NOT_FOUND)));
+	}
 
-  @Test
-  public void deleteShouldRespondWithNoContentIfDeleteSuccessful() throws Exception {
+	@Test
+	public void deleteShouldRespondWithNoContentIfDeleteSuccessful() throws Exception {
 
-    when(service.delete("Olaf Stapledon")).thenReturn(true);
-    ResponseEntity<Void> result = controller.delete("Olaf Stapledon");
-    assertThat(result, is(responseEntityWithStatus(NO_CONTENT)));
-  }
+		when(service.delete("Olaf Stapledon")).thenReturn(true);
+		ResponseEntity<Void> result = controller.delete("Olaf Stapledon");
+		assertThat(result, is(responseEntityWithStatus(NO_CONTENT)));
+	}
 
-  private Matcher<ResponseEntity> responseEntityWithStatus(HttpStatus status) {
+	
 
-    return new TypeSafeMatcher<ResponseEntity>() {
+	private Matcher<ResponseEntity<List<Customer>>> responseEntityWithStatus2(HttpStatus status) {
 
-      @Override
-      protected boolean matchesSafely(ResponseEntity item) {
+	    return new TypeSafeMatcher<ResponseEntity<List<Customer>>>() {
 
-        return status.equals(item.getStatusCode());
-      }
+	      @Override
+	      protected boolean matchesSafely(ResponseEntity<List<Customer>> item) {
 
-      @Override
-      public void describeTo(Description description) {
+	        return status.equals(item.getStatusCode());
+	      }
 
-        description.appendText("ResponseEntity with status ").appendValue(status);
-      }
-    };
-  }
+	      @Override
+	      public void describeTo(Description description) {
 
-  private <T> Matcher<ResponseEntity<? extends T>> responseEntityThat(Matcher<T> categoryMatcher) {
+	        description.appendText("ResponseEntity with status ").appendValue(status);
+	      }
+	    };
+	  }
+	
 
-    return new TypeSafeMatcher<ResponseEntity<? extends T>>() {
-      @Override
-      protected boolean matchesSafely(ResponseEntity<? extends T> item) {
+	private Matcher<ResponseEntity<Customer>> responseEntityWithStatus3(HttpStatus status) {
 
-        return categoryMatcher.matches(item.getBody());
-      }
+		return new TypeSafeMatcher<ResponseEntity<Customer>>() {
 
-      @Override
-      public void describeTo(Description description) {
+			@Override
+			protected boolean matchesSafely(ResponseEntity<Customer> item) {
 
-        description.appendText("ResponseEntity with ").appendValue(categoryMatcher);
-      }
-    };
-  }
+				return status.equals(item.getStatusCode());
+			}
+
+			@Override
+			public void describeTo(Description description) {
+
+				description.appendText("ResponseEntity with status ").appendValue(status);
+			}
+		};
+	}
+
+	private Matcher<ResponseEntity> responseEntityWithStatus(HttpStatus status) {
+
+		return new TypeSafeMatcher<ResponseEntity>() {
+
+			@Override
+			protected boolean matchesSafely(ResponseEntity item) {
+
+				return status.equals(item.getStatusCode());
+			}
+
+			@Override
+			public void describeTo(Description description) {
+
+				description.appendText("ResponseEntity with status ").appendValue(status);
+			}
+		};
+	}
+
+	private <T> Matcher<ResponseEntity<? extends T>> responseEntityThat(Matcher<T> categoryMatcher) {
+
+		return new TypeSafeMatcher<ResponseEntity<? extends T>>() {
+			@Override
+			protected boolean matchesSafely(ResponseEntity<? extends T> item) {
+
+				return categoryMatcher.matches(item.getBody());
+			}
+
+			@Override
+			public void describeTo(Description description) {
+
+				description.appendText("ResponseEntity with ").appendValue(categoryMatcher);
+			}
+		};
+	}
 }

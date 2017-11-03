@@ -12,6 +12,7 @@ plugins {
 }
 
 apply plugin: 'spring-boot'
+apply plugin: 'maven'
 
 repositories {
     jcenter()
@@ -45,3 +46,4 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     outputs.upToDateWhen { false }
 }
+
