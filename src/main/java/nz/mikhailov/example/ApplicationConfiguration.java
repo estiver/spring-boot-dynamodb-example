@@ -12,28 +12,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationConfiguration {
 
-  private final static String DYNAMODB_ENDPOINT_DEFAULT_VALUE = "http://localhost:8000";
+	private final Logger log = LoggerFactory.getLogger(getClass());
 
-  private final Logger log = LoggerFactory.getLogger(getClass());
+	@Value("${dynamo.endpoint}")
+	private String dynamoDbEndpoint;
 
-  @Value("${dynamoDbEndpoint:" + DYNAMODB_ENDPOINT_DEFAULT_VALUE + "}")
-  private String dynamoDbEndpoint;
+	@Bean
+	public AmazonDynamoDB amazonDynamoDb() {
 
-  @Bean
-  public AmazonDynamoDB amazonDynamoDb() {
+		log.trace("Entering amazonDynamoDb()");
+		AmazonDynamoDB client = new AmazonDynamoDBClient();
+		log.info("Using DynamoDb endpoint {}", dynamoDbEndpoint);
+		client.setEndpoint(dynamoDbEndpoint);
+		return client;
+	}
 
-    log.trace("Entering amazonDynamoDb()");
-    AmazonDynamoDB client = new AmazonDynamoDBClient();
-    log.info("Using DynamoDb endpoint {}", dynamoDbEndpoint);
-    client.setEndpoint(dynamoDbEndpoint);
-    return client;
-  }
+	@Bean
+	public DynamoDBMapper dynamoDbMapper(AmazonDynamoDB amazonDynamoDB) {
 
-  @Bean
-  public DynamoDBMapper dynamoDbMapper(AmazonDynamoDB amazonDynamoDB) {
-
-    log.trace("Entering dynamoDbMapper()");
-    return new DynamoDBMapper(amazonDynamoDB);
-  }
+		log.trace("Entering dynamoDbMapper()");
+		return new DynamoDBMapper(amazonDynamoDB);
+	}
 
 }
