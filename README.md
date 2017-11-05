@@ -1,3 +1,6 @@
+> Below, the original document.
+> I added maven initialization of the dynamodb  and example of springdata
+
 # Spring Boot RESTful Microservice Example with Amazon DynamoDB
 
 ## The original task
