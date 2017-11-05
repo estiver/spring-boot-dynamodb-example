@@ -1,14 +1,14 @@
 package nz.mikhailov.example.customer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static com.amazonaws.util.StringUtils.isNullOrEmpty;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.amazonaws.util.StringUtils.isNullOrEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CustomerService {
@@ -17,6 +17,9 @@ public class CustomerService {
 
   @Autowired
   private CustomerRepository repository;
+  
+  @Autowired
+  private CustomerRepositorySData repositorySData;
 
   public Optional<Customer> read(String name) {
 
@@ -75,14 +78,13 @@ public class CustomerService {
     if (!repository.read(name).isPresent()) {
       log.warn("Customer {} not found", name);
       return false;
-    }
+    }	
     repository.delete(name);
     return true;
   }
 
   public List<Customer> list() {
-
     log.trace("Entering list()");
-    return repository.readAll();
+    return repositorySData.findAll();
   }
 }
